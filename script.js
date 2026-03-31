@@ -1,6 +1,7 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const scoreElement = document.getElementById('score');
+const startBtn = document.getElementById('startBtn');
 
 const gridSize = 20;
 const gridWidth = canvas.width / gridSize;
@@ -31,9 +32,7 @@ function drawGrid() {
     }
 }
 
-// Функция для инициализации игры
 function initGame() {
-    // Создаем змейку из 3 сегментов
     snake = [
         {x: 10, y: 10},
         {x: 9, y: 10},
@@ -44,14 +43,11 @@ function initGame() {
     nextDirection = 'RIGHT';
     score = 0;
     scoreElement.textContent = score;
-    
-    // Создаем первую еду
-    generateFood();
-    
     gameRunning = true;
+    
+    generateFood();
 }
 
-// Функция генерации еды в случайном месте
 function generateFood() {
     let newFood;
     let validPosition = false;
@@ -62,7 +58,6 @@ function generateFood() {
             y: Math.floor(Math.random() * gridHeight)
         };
         
-        // Проверяем, не появляется ли еда на змейке
         validPosition = true;
         for (let segment of snake) {
             if (segment.x === newFood.x && segment.y === newFood.y) {
@@ -75,17 +70,15 @@ function generateFood() {
     food = newFood;
 }
 
-// Функция отрисовки змейки
 function drawSnake() {
     snake.forEach((segment, index) => {
         if (index === 0) {
-            ctx.fillStyle = '#4CAF50'; // голова - зеленый
+            ctx.fillStyle = '#4CAF50';
         } else {
-            ctx.fillStyle = '#8BC34A'; // тело - светлый зеленый
+            ctx.fillStyle = '#8BC34A';
         }
         ctx.fillRect(segment.x * gridSize, segment.y * gridSize, gridSize - 1, gridSize - 1);
         
-        // Добавляем глаза для головы
         if (index === 0) {
             ctx.fillStyle = 'white';
             const eyeSize = 3;
@@ -108,43 +101,26 @@ function drawSnake() {
     });
 }
 
-// Функция отрисовки еды
 function drawFood() {
     ctx.fillStyle = '#FF5252';
     ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 1, gridSize - 1);
-    
-    // Добавляем блик на еде
     ctx.fillStyle = '#FF8A80';
     ctx.fillRect(food.x * gridSize + 4, food.y * gridSize + 4, 4, 4);
 }
 
-// Функция отрисовки всего
 function draw() {
-    // Очищаем canvas
     ctx.fillStyle = '#111';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
     drawGrid();
     drawFood();
     drawSnake();
 }
 
-// Временная функция для тестирования
-function test() {
-    initGame();
-    draw();
-    console.log('Змейка создана:', snake);
-    console.log('Еда создана:', food);
-}
-
-// Запускаем тест
-// Функция обработки нажатий клавиш
 function handleKeyPress(event) {
     if (!gameRunning) return;
     
     const key = event.key;
     
-    // Запрещаем движение в противоположном направлении
     if (key === 'ArrowUp' && direction !== 'DOWN') {
         nextDirection = 'UP';
     } else if (key === 'ArrowDown' && direction !== 'UP') {
@@ -156,12 +132,8 @@ function handleKeyPress(event) {
     }
 }
 
-// Функция движения змейки
 function moveSnake() {
-    // Обновляем направление
     direction = nextDirection;
-    
-    // Вычисляем новую голову
     let newHead = {...snake[0]};
     
     switch(direction) {
@@ -179,32 +151,24 @@ function moveSnake() {
             break;
     }
     
-    // Добавляем новую голову
     snake.unshift(newHead);
     
-    // Проверяем, съела ли змейка еду
     if (newHead.x === food.x && newHead.y === food.y) {
-        // Увеличиваем счет
         score++;
         scoreElement.textContent = score;
-        // Генерируем новую еду
         generateFood();
     } else {
-        // Удаляем хвост, если еда не съедена
         snake.pop();
     }
 }
 
-// Функция проверки столкновений
 function checkCollision() {
     const head = snake[0];
     
-    // Проверка столкновения со стенами
     if (head.x < 0 || head.x >= gridWidth || head.y < 0 || head.y >= gridHeight) {
         return true;
     }
     
-    // Проверка столкновения с собой
     for (let i = 1; i < snake.length; i++) {
         if (head.x === snake[i].x && head.y === snake[i].y) {
             return true;
@@ -214,7 +178,6 @@ function checkCollision() {
     return false;
 }
 
-// Основной игровой цикл
 function update() {
     if (!gameRunning) return;
     
@@ -228,20 +191,21 @@ function update() {
     draw();
 }
 
-// Функция завершения игры
 function gameOver() {
     gameRunning = false;
     if (gameLoop) {
         clearInterval(gameLoop);
         gameLoop = null;
     }
-    alert(`Игра окончена! Ваш счет: ${score}`);
+    setTimeout(() => {
+        alert(`Игра окончена! Ваш счет: ${score}`);
+    }, 50);
 }
 
-// Функция запуска игры
 function startGame() {
     if (gameLoop) {
         clearInterval(gameLoop);
+        gameLoop = null;
     }
     
     initGame();
@@ -249,13 +213,15 @@ function startGame() {
     gameLoop = setInterval(update, 150);
 }
 
-// Подключаем обработчик клавиш
+// Обработчики событий
 document.addEventListener('keydown', handleKeyPress);
-
-// Обновляем тестовую функцию
-function test() {
+startBtn.addEventListener('click', () => {
+    if (gameLoop) {
+        clearInterval(gameLoop);
+        gameLoop = null;
+    }
     startGame();
-}
+});
 
-// Запускаем тест
-test();
+// Инициализация
+startGame();
