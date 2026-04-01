@@ -15,6 +15,10 @@ let gameLoop = null;
 let score = 0;
 let gameRunning = false;
 
+let highScore = localStorage.getItem('snakeHighScore') || 0;
+const highScoreElement = document.getElementById('highScore');
+highScoreElement.textContent = highScore;
+
 function drawGrid() {
     ctx.strokeStyle = '#333';
     ctx.lineWidth = 0.5;
