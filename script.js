@@ -221,7 +221,9 @@ function startGame() {
     
     initGame();
     draw();
-    gameLoop = setInterval(update, 150);
+    // Скорость увеличивается со счетом
+    let speed = Math.max(150 - Math.floor(score / 10) * 5, 50);
+    gameLoop = setInterval(update, speed);
 }
 
 // Обработчики событий
