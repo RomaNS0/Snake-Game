@@ -201,6 +201,13 @@ function gameOver() {
         clearInterval(gameLoop);
         gameLoop = null;
     }
+
+    if (score > highScore) {
+    highScore = score;
+    localStorage.setItem('snakeHighScore', highScore);
+    highScoreElement.textContent = highScore;
+}
+
     setTimeout(() => {
         alert(`Игра окончена! Ваш счет: ${score}`);
     }, 50);
