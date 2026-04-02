@@ -106,10 +106,29 @@ function drawSnake() {
 }
 
 function drawFood() {
+    // Круглая ягодка с бликом
+    ctx.beginPath();
+    ctx.arc(
+        food.x * gridSize + gridSize/2,
+        food.y * gridSize + gridSize/2,
+        gridSize/2 - 2,
+        0,
+        Math.PI * 2
+    );
     ctx.fillStyle = '#FF5252';
-    ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 1, gridSize - 1);
-    ctx.fillStyle = '#FF8A80';
-    ctx.fillRect(food.x * gridSize + 4, food.y * gridSize + 4, 4, 4);
+    ctx.fill();
+    
+    // Маленький белый блик (как отражение света)
+    ctx.beginPath();
+    ctx.arc(
+        food.x * gridSize + gridSize/2 - 3,
+        food.y * gridSize + gridSize/2 - 3,
+        2,
+        0,
+        Math.PI * 2
+    );
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fill();
 }
 
 function draw() {
