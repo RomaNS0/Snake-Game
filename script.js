@@ -179,33 +179,11 @@ function moveSnake() {
     if (newHead.x === food.x && newHead.y === food.y) {
         score++;
         scoreElement.textContent = score;
-        
-        // АНИМАЦИЯ ПРИ СЪЕДАНИИ
-        // Эффект увеличения canvas
-        canvas.style.transform = 'scale(1.05)';
-        canvas.style.transition = 'transform 0.1s ease';
-        setTimeout(() => {
-            canvas.style.transform = 'scale(1)';
-        }, 100);
-        
-        // Моргание на месте еды
-        ctx.fillStyle = '#FFFFFF';
-        ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize, gridSize);
-        
-        // Анимация счета
-        scoreElement.style.transform = 'scale(1.3)';
-        scoreElement.style.color = '#FF5252';
-        scoreElement.style.transition = 'all 0.2s ease';
-        setTimeout(() => {
-            scoreElement.style.transform = 'scale(1)';
-            scoreElement.style.color = '#764ba2';
-        }, 200);
-        
         generateFood();
     } else {
         snake.pop();
     }
-}   
+}
 
 function checkCollision() {
     const head = snake[0];
@@ -267,8 +245,47 @@ function startGame() {
     gameLoop = setInterval(update, speed);
 }
 
+// ПАУЗА ПО ПРОБЕЛУ 
+let paused = false;
+let pauseOverlay = null;
+
+function handlePause(event) {
+    if (event.key === ' ' || event.key === 'Space') {
+        event.preventDefault();
+        paused = !paused;
+        
+        if (paused) {
+            if (gameLoop) {
+                clearInterval(gameLoop);
+                gameLoop = null;
+            }
+            //надпись ПАУЗА
+            const container = document.querySelector('.container');
+            container.style.position = 'relative';
+            pauseOverlay = document.createElement('div');
+            pauseOverlay.innerHTML = '<div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.8); color: white; padding: 20px 40px; border-radius: 10px; font-size: 32px; font-weight: bold;">⏸ ПАУЗА</div>';
+            pauseOverlay.style.position = 'absolute';
+            pauseOverlay.style.top = '0';
+            pauseOverlay.style.left = '0';
+            pauseOverlay.style.width = '100%';
+            pauseOverlay.style.height = '100%';
+            pauseOverlay.style.pointerEvents = 'none';
+            pauseOverlay.style.zIndex = '999';
+            container.appendChild(pauseOverlay);
+        } else {
+            if (pauseOverlay) {
+                pauseOverlay.remove();
+                pauseOverlay = null;
+            }
+            let speed = Math.max(150 - Math.floor(score / 10) * 5, 50);
+            gameLoop = setInterval(update, speed);
+        }
+    }
+}
+
 // Обработчики событий
 document.addEventListener('keydown', handleKeyPress);
+document.addEventListener('keydown', handlePause);  
 startBtn.addEventListener('click', () => {
     if (gameLoop) {
         clearInterval(gameLoop);
