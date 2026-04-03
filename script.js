@@ -179,11 +179,33 @@ function moveSnake() {
     if (newHead.x === food.x && newHead.y === food.y) {
         score++;
         scoreElement.textContent = score;
+        
+        // АНИМАЦИЯ ПРИ СЪЕДАНИИ
+        // Эффект увеличения canvas
+        canvas.style.transform = 'scale(1.05)';
+        canvas.style.transition = 'transform 0.1s ease';
+        setTimeout(() => {
+            canvas.style.transform = 'scale(1)';
+        }, 100);
+        
+        // Моргание на месте еды
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize, gridSize);
+        
+        // Анимация счета
+        scoreElement.style.transform = 'scale(1.3)';
+        scoreElement.style.color = '#FF5252';
+        scoreElement.style.transition = 'all 0.2s ease';
+        setTimeout(() => {
+            scoreElement.style.transform = 'scale(1)';
+            scoreElement.style.color = '#764ba2';
+        }, 200);
+        
         generateFood();
     } else {
         snake.pop();
     }
-}
+}   
 
 function checkCollision() {
     const head = snake[0];
